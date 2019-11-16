@@ -2,3 +2,6 @@
 .idea/
 .gradle/
 examples/out/
+astminer-cli/build/
+build/
+src/main/generated/

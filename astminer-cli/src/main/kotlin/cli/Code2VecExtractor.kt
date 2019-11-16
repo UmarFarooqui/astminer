@@ -26,32 +26,6 @@ import java.io.File
 
 class Code2VecExtractor : CliktCommand() {
 
-    val extensions: List<String> by option(
-        "--lang",
-        help = "File extensions that will be parsed"
-    ).split(",").required()
-
-    val projectRoot: String by option(
-        "--project",
-        help = "Path to the project that will be parsed"
-    ).required()
-
-    val outputDirName: String by option(
-        "--output",
-        help = "Path to directory where the output will be stored"
-    ).required()
-
-    val maxPathHeight: Int by option(
-        "--maxH",
-        help = "Maximum height of path for code2vec"
-    ).int().default(8)
-
-    val maxPathWidth: Int by option(
-        "--maxW",
-        help = "Maximum width of path. " +
-                "Note, that here width is the difference between token indices in contrast to the original code2vec."
-    ).int().default(3)
-
     val maxPathContexts: Int by option(
         "--maxContexts",
         help = "Number of path contexts to keep from each method."
@@ -96,36 +70,22 @@ class Code2VecExtractor : CliktCommand() {
     }
 
     private fun extract() {
-        val outputDir = File(outputDirName)
-        for (extension in extensions) {
-            val miner = PathMiner(PathRetrievalSettings(maxPathHeight, maxPathWidth))
-            val storage = Code2VecPathStorage(outputDirName)
+        val maxPathHeight = 5    // Maximum height of path for code2vec
+        val maxPathWidth = 5    // Maximum width of path. Note, that here width is the difference between token indices in contrast to the original code2vec.
+        val miner = PathMiner(PathRetrievalSettings(maxPathHeight, maxPathWidth))
+        val storage = Code2VecPathStorage("sample/HelloWorldProjectResults")
 
-            when (extension) {
-                "c", "cpp" -> {
-                    val parser = FuzzyCppParser()
-                    val roots = parser.parseWithExtension(File(projectRoot), extension)
-                    extractFromMethods(roots, FuzzyMethodSplitter(), miner, storage)
-                }
-                "java" -> {
-                    val parser = JavaParser()
-                    val roots = parser.parseWithExtension(File(projectRoot), extension)
-                    extractFromMethods(roots, JavaMethodSplitter(), miner, storage)
-                }
-                "py" -> {
-                    val parser = PythonParser()
-                    val roots = parser.parseWithExtension(File(projectRoot), extension)
-                    extractFromMethods(roots, PythonMethodSplitter(), miner, storage)
-                }
-                else -> throw UnsupportedOperationException("Unsupported extension $extension")
-            }
+        val parser = PythonParser()
+        val input = "def square(x):\\n    return x*x"
+        val input_stream = input.byteInputStream(Charsets.UTF_8)
+        val py_file = File("sample/HelloWorldProject/HelloWorld.py")
+        val list_of_files = listOf(py_file)
+        val roots = parser.parse(list_of_files)
+        extractFromMethods(roots, PythonMethodSplitter(), miner, storage)
 
-            val outputDirForLanguage = outputDir.resolve(extension)
-            outputDirForLanguage.mkdir()
-            // Save stored data on disk
-            // TODO: implement batches for path context extraction
-            storage.save(maxPaths, maxTokens)
-        }
+        // Save stored data on disk
+        // TODO: implement batches for path context extraction
+        storage.save(maxPaths, maxTokens)
     }
 
     override fun run() {
