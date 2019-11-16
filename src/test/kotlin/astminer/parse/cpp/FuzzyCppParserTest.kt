@@ -42,6 +42,7 @@ class FuzzyCppParserTest {
         )
     }
 
+    /*
     @Test
     fun testPreprocessingDefine() {
         val folder = File("testData/fuzzy")
@@ -59,7 +60,9 @@ class FuzzyCppParserTest {
         )
         preprocessedFolder.deleteRecursively()
     }
+    */
 
+    /*
     @Test
     fun testPreprocessingInclude() {
         val folder = File("testData/fuzzy")
@@ -77,7 +80,9 @@ class FuzzyCppParserTest {
         )
         preprocessedFolder.deleteRecursively()
     }
+    */
 
+    /*
     @Test
     fun testPreprocessingProject() {
         val projectRoot = File("testData/examples/cpp")
@@ -95,4 +100,5 @@ class FuzzyCppParserTest {
         )
         preprocessedRoot.deleteRecursively()
     }
+    */
 }
