@@ -42,16 +42,13 @@ class Code2VecExtractor : CliktCommand() {
     ).long().default(Long.MAX_VALUE)
 
     private fun <T : Node> extractFromMethods(
-        roots: List<ParseResult<T>>,
+        root: T,
         methodSplitter: TreeMethodSplitter<T>,
         miner: PathMiner,
         storage: Code2VecPathStorage
     ) {
-        val methods = roots.mapNotNull {
-            it.root
-        }.flatMap {
-            methodSplitter.splitIntoMethods(it)
-        }
+        val methods = methodSplitter.splitIntoMethods(root)
+
         methods.forEach { methodInfo ->
             val methodNameNode = methodInfo.method.nameNode ?: return@forEach
             val methodRoot = methodInfo.method.root
@@ -76,12 +73,14 @@ class Code2VecExtractor : CliktCommand() {
         val storage = Code2VecPathStorage("sample/HelloWorldProjectResults")
 
         val parser = PythonParser()
-        val input = "def square(x):\\n    return x*x"
+        val input = "def square(x):\n    return x*x"
         val input_stream = input.byteInputStream(Charsets.UTF_8)
-        val py_file = File("sample/HelloWorldProject/HelloWorld.py")
-        val list_of_files = listOf(py_file)
-        val roots = parser.parse(list_of_files)
-        extractFromMethods(roots, PythonMethodSplitter(), miner, storage)
+        val root = parser.parse(input_stream)
+        if (root != null)
+        {
+            val nonNullableRoot = root
+            extractFromMethods(nonNullableRoot, PythonMethodSplitter(), miner, storage)
+        }
 
         // Save stored data on disk
         // TODO: implement batches for path context extraction
