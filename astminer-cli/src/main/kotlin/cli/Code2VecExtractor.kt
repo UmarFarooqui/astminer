@@ -26,6 +26,11 @@ import java.io.File
 
 class Code2VecExtractor : CliktCommand() {
 
+    val methodContent: String by option(
+        "--methodContent",
+        help = "Content of the method for which the path contexts will be generated"
+    ).required()
+
     val maxPathContexts: Int by option(
         "--maxContexts",
         help = "Number of path contexts to keep from each method."
@@ -73,7 +78,7 @@ class Code2VecExtractor : CliktCommand() {
         val storage = Code2VecPathStorage("sample/HelloWorldProjectResults")
 
         val parser = PythonParser()
-        val input = "def square(x):\n    \"\"\"Calculates square root of a number.\n    \"\"\"\n    return x*x"
+        val input = methodContent
         val input_stream = input.byteInputStream(Charsets.UTF_8)
         val root = parser.parse(input_stream)
         if (root != null)
