@@ -73,13 +73,13 @@ class Code2VecExtractor : CliktCommand() {
         val storage = Code2VecPathStorage("sample/HelloWorldProjectResults")
 
         val parser = PythonParser()
-        val input = "def square(x):\n    return x*x"
+        val input = "def square(x):\n    \"\"\"Calculates square root of a number.\n    \"\"\"\n    return x*x"
         val input_stream = input.byteInputStream(Charsets.UTF_8)
         val root = parser.parse(input_stream)
         if (root != null)
         {
-            val nonNullableRoot = root
-            extractFromMethods(nonNullableRoot, PythonMethodSplitter(), miner, storage)
+            val non_nullable_root = root
+            extractFromMethods(non_nullable_root, PythonMethodSplitter(), miner, storage)
         }
 
         // Save stored data on disk
