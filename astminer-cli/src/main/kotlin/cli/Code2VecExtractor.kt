@@ -31,6 +31,11 @@ class Code2VecExtractor : CliktCommand() {
         help = "Content of the method for which the path contexts will be generated"
     ).required()
 
+    val outputDirName: String by option(
+        "--output",
+        help = "Path to directory where the output will be stored"
+    ).required()
+
     val maxPathContexts: Int by option(
         "--maxContexts",
         help = "Number of path contexts to keep from each method."
@@ -75,7 +80,7 @@ class Code2VecExtractor : CliktCommand() {
         val maxPathHeight = 5    // Maximum height of path for code2vec
         val maxPathWidth = 5    // Maximum width of path. Note, that here width is the difference between token indices in contrast to the original code2vec.
         val miner = PathMiner(PathRetrievalSettings(maxPathHeight, maxPathWidth))
-        val storage = Code2VecPathStorage("sample/HelloWorldProjectResults")
+        val storage = Code2VecPathStorage(outputDirName)
 
         val parser = PythonParser()
         val input = methodContent
