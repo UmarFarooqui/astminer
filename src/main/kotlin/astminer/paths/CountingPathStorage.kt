@@ -34,6 +34,8 @@ abstract class CountingPathStorage<LabelType>(
 
     abstract fun dumpPathContexts(file: File, tokensLimit: Long, pathsLimit: Long)
 
+    open fun getPathContexts(file: File, tokensLimit: Long, pathsLimit: Long): MutableList<String> { return mutableListOf<String>() }
+
     private fun doStore(pathContext: PathContext): PathContextId {
         val startTokenId = tokensMap.record(pathContext.startToken)
         val endTokenId = tokensMap.record(pathContext.endToken)
@@ -84,5 +86,12 @@ abstract class CountingPathStorage<LabelType>(
             dumpPathContexts(File("$outputFolderPath/path_contexts_${contextsFileIndex++}.csv"),
                     Long.MAX_VALUE, Long.MAX_VALUE)
         }
+    }
+
+    public fun getPathContextInfo(pathsLimit: Long, tokensLimit: Long): MutableList<String> {
+        if (batchMode && (pathsLimit < Long.MAX_VALUE || tokensLimit < Long.MAX_VALUE)) {
+            println("Ignoring path and token limit settings due to batchMode processing")
+        }
+        return getPathContexts(File("$outputFolderPath/path_contexts_${contextsFileIndex++}.csv"), Long.MAX_VALUE, Long.MAX_VALUE)
     }
 }
