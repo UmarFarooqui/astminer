@@ -21,7 +21,7 @@ class Code2VecPathStorage(outputFolderPath: String) : CountingPathStorage<String
         writeLinesToFile(lines, file)
     }
 
-    override fun getPathContexts(file: File, tokensLimit: Long, pathsLimit: Long): MutableList<String> {
+    override fun getPathContexts(file: File, tokensLimit: Long, pathsLimit: Long): Pair<MutableList<String>, Triple<String, String, String>> {
         val lines = mutableListOf<String>()
         labeledPathContextIdsList.forEach { labeledPathContextIds ->
             val pathContextIdsString = labeledPathContextIds.pathContexts.filter {
@@ -34,7 +34,7 @@ class Code2VecPathStorage(outputFolderPath: String) : CountingPathStorage<String
             lines.add("${labeledPathContextIds.label} $pathContextIdsString")
         }
 
-        return lines
+        return Pair(lines, Triple("x", "y", "z"))
     }
 
 }

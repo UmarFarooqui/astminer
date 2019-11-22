@@ -90,7 +90,16 @@ class Code2VecExtractor : CliktCommand() {
 
         // Save stored data on disk
         // TODO: implement batches for path context extraction
-        println(storage.getPathContextInfo(maxPaths, maxTokens))
+        val p = storage.getPathContextInfo(maxPaths, maxTokens)
+        val path_contexts = p.first
+        val t = p.second
+        val tokens = t.first
+        val node_types = t.second
+        val paths = t.third
+        println(path_contexts)
+        println(tokens)
+        println(node_types)
+        println(paths)
     }
 
     override fun run() {
