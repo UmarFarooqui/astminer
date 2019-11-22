@@ -34,7 +34,7 @@ abstract class CountingPathStorage<LabelType>(
 
     abstract fun dumpPathContexts(file: File, tokensLimit: Long, pathsLimit: Long)
 
-    open fun getPathContexts(file: File, tokensLimit: Long, pathsLimit: Long): Pair<MutableList<String>, Triple<String, String, String>> { return Pair(mutableListOf<String>(), Triple("", "", "")) }
+    open fun getPathContexts(file: File, tokensLimit: Long, pathsLimit: Long): MutableList<String> { return mutableListOf<String>() }
 
     private fun doStore(pathContext: PathContext): PathContextId {
         val startTokenId = tokensMap.record(pathContext.startToken)
@@ -88,10 +88,13 @@ abstract class CountingPathStorage<LabelType>(
         }
     }
 
-    public fun getPathContextInfo(pathsLimit: Long, tokensLimit: Long): Pair<MutableList<String>, Triple<String, String, String>> {
+    public fun getPathContextInfo(pathsLimit: Long, tokensLimit: Long): Pair<MutableList<String>, Triple<MutableList<String>, MutableList<String>, MutableList<String>>> {
         if (batchMode && (pathsLimit < Long.MAX_VALUE || tokensLimit < Long.MAX_VALUE)) {
             println("Ignoring path and token limit settings due to batchMode processing")
         }
-        return getPathContexts(File("$outputFolderPath/path_contexts_${contextsFileIndex++}.csv"), Long.MAX_VALUE, Long.MAX_VALUE)
+        return Pair(getPathContexts(File("$outputFolderPath/path_contexts_${contextsFileIndex++}.csv"), Long.MAX_VALUE, Long.MAX_VALUE), 
+                    Triple(getIdStorageCsv(tokensMap, "token", tokenToCsvString, tokensLimit), 
+                           getIdStorageCsv(orientedNodeTypesMap, "node_type", orientedNodeToCsvString, Long.MAX_VALUE), 
+                           getIdStorageCsv(pathsMap, "path", pathToCsvString, pathsLimit)))
     }
 }
